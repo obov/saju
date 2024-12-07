@@ -1,0 +1,11 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "saju-back-stack"
+resolve_s3 = true
+s3_prefix = "saju-back-stack"
+region = "ap-northeast-2"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "BucketName=\"s3-saju-2024-12-08\""
+image_repositories = []
+disable_rollback = true
+confirm_changeset = true

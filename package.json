@@ -6,8 +6,13 @@
   ],
   "scripts": {
     "install:front": "npm install --workspace=apps/front",
+    "install:back": "npm install --workspace=apps/back",
     "dev:front": "npm run dev --workspace=apps/front",
     "dev:back": "npm run start --workspace=apps/back",
-    "build": "npm run build --workspaces"
+    "build:front": "npm run build --workspace=apps/front",
+    "build:back": "npm run build --workspace=apps/back",
+    "deploy:back": "cd apps/back && npm run deploy && cd ../.. || cd ../..",
+    "build": "npm run build --workspaces",
+    "clean": "rm -rf node_modules && rm -rf apps/*/node_modules"
   }
 }

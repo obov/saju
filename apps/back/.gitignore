@@ -1,0 +1,5 @@
+# SAM build
+.aws-sam/
+
+# Node
+node_modules/ 
