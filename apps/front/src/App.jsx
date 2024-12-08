@@ -17,6 +17,41 @@ function App() {
   const [birthdateValue, setBirthdateValue] = useState(""); // 생년월일 입력 값
   const [hourValue, setHourValue] = useState(""); // 시간 입력 값
 
+  // 시간 입력 핸들러
+  const handleHourChange = (e) => {
+    let value = e.target.value.replace(/[^0-9:]/g, "");
+
+    // 콜론 제거
+    value = value.replace(/:/g, "");
+
+    // 4자리로 제한
+    if (value.length > 4) {
+      value = value.slice(0, 4);
+    }
+
+    // 3자리 숫자인 경우 (예: 230 -> 02:30)
+    if (value.length === 3) {
+      const hour = value.slice(0, 2);
+      const minute = value.slice(2);
+
+      e.target.value = `${hour}:${minute}`;
+      setHourValue(`${hour}:${minute}`);
+      return;
+    }
+
+    // 4자리 숫자인 경우 (예: 1430 -> 14:30)
+    if (value.length === 4) {
+      const hour = value.slice(0, 2);
+      const minute = value.slice(2);
+
+      e.target.value = `${hour}:${minute}`;
+      setHourValue(`${hour}:${minute}`);
+      return;
+    }
+
+    setHourValue(value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -56,16 +91,17 @@ function App() {
     setDayGan(data.dayGan);
     setDayZhi(data.dayZhi);
 
-    // 시간 처리
-    const hour = parseInt(e.target.hour.value);
-    if (isNaN(hour)) {
-      setTimeGan(""); // 시간 천간 초기화
-      setTimeZhi(""); // 시간 지지 초기화
+    // 시간 검증
+    if (!hourValue) return;
+
+    const timeValidation = validateAndFormatTime(hourValue);
+    if (!timeValidation.isValid) {
+      alert(timeValidation.error);
       return;
     }
 
     // 시주 계산
-    const timeZhi = getTimeZhi(hour);
+    const timeZhi = getTimeZhi(timeValidation.hour);
     const timeGan = getTimeGan(data.dayGan, timeZhi);
     setTimeZhi(timeZhi);
     setTimeGan(timeGan);
@@ -106,7 +142,7 @@ function App() {
     return timeSlot ? timeSlot.zhi : "";
   };
 
-  // 일간에 따른 시간 천간(天干) 결정
+  // 간에 따른 시간 천간(天干) 결정
   const getTimeGan = (dailyGan, timeZhi) => {
     if (!dailyGan || !timeZhi) return "";
 
@@ -185,11 +221,6 @@ function App() {
     setter(e.target.value);
   };
 
-  // 시간 초기화 핸들러 개선
-  const handleClearTime = () => {
-    setHourValue("");
-  };
-
   const earthlyBranchesClasses = {
     子: "bg-gray-800 text-gray-200 border-gray-600", // 흑색 (수)
     丑: "bg-yellow-300 text-gray-700 border-yellow-600", // 황색 (토)
@@ -206,7 +237,7 @@ function App() {
   };
 
   const heavenlyStemsClasses = {
-    甲: "bg-green-300 text-gray-700 border-green-600", // 녹색 (목녹색)
+    甲: "bg-green-300 text-gray-700 border-green-600", // 녹색 (목���색)
     乙: "bg-green-300 text-gray-700 border-green-600", // 목 (녹색)
     丙: "bg-red-300 text-gray-700 border-red-600", // 화 (적색)
     丁: "bg-red-300 text-gray-700 border-red-600", // 화 (적색)
@@ -252,10 +283,9 @@ function App() {
                     onKeyDown={(e) => handleKeyDown(e, setNameValue)}
                   />
                   {nameValue && (
-                    <button
-                      type="button"
+                    <div
                       onClick={() => handleClearInput(setNameValue)}
-                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -271,7 +301,7 @@ function App() {
                           d="M6 18 18 6M6 6l12 12"
                         />
                       </svg>
-                    </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -324,10 +354,9 @@ function App() {
                     }}
                   />
                   {birthdateValue && (
-                    <button
-                      type="button"
+                    <div
                       onClick={() => handleClearInput(setBirthdateValue)}
-                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -343,7 +372,7 @@ function App() {
                           d="M6 18 18 6M6 6l12 12"
                         />
                       </svg>
-                    </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -354,19 +383,17 @@ function App() {
                   <input
                     type="text"
                     name="hour"
-                    placeholder="시 (0-23)"
+                    placeholder="시간 (예: 1430 또는 230)"
                     autoComplete="off"
                     className="w-full p-2 border rounded-lg"
                     value={hourValue}
-                    onChange={(e) => handleInputChange(e, setHourValue)}
+                    onChange={handleHourChange}
                     onKeyDown={(e) => handleKeyDown(e, setHourValue)}
-                    onInput={handleHourInput}
                   />
                   {hourValue && (
-                    <button
-                      type="button"
-                      onClick={handleClearTime}
-                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    <div
+                      onClick={() => handleClearInput(setHourValue)}
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300 cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -382,7 +409,7 @@ function App() {
                           d="M6 18 18 6M6 6l12 12"
                         />
                       </svg>
-                    </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -518,35 +545,41 @@ function App() {
   );
 }
 
-// 시간 입력 핸들러 함수
-// 입력된 시간값을 검증하고 0-23 사이의 숫자만 허용하는 함수
-const handleHourInput = (e) => {
-  // 입력된 값을 가져옴
-  let value = e.target.value;
-
-  // 숫자가 아닌 모든 문자 제거 (정규식 사용)
-  value = value.replace(/[^0-9]/g, "");
-
-  // 빈 문자열이면 입력값 초기화
-  if (!value) {
-    e.target.value = "";
-    return;
-  }
-
-  // 유효하지 않은 시간이면 마지막 입력 문자 제거
-  if (parseInt(value) < 0 || parseInt(value) > 23) {
-    e.target.value = value.slice(0, -1);
-    return;
-  }
-
-  // 0으로 시작하는 경우 처리
-  if (value.length > 1 && value[0] === "0") {
-    e.target.value = value.slice(1);
-    return;
-  }
-
-  // 유효한 시간이면 입력값 업데이트
-  e.target.value = value;
-};
-
 export default App;
+
+const validateAndFormatTime = (value) => {
+  if (!value) return { isValid: false, hour: null };
+
+  // 콜론 제거하고 숫자만 추출
+  const numbers = value.replace(/[^0-9]/g, "");
+
+  // 시간 형식 검증
+  if (numbers.length <= 2) {
+    // 1-2자리 숫자인 경우
+    if (!/^\d{1,2}$/.test(numbers)) {
+      return { isValid: false, error: "올바른 시간을 입력해주세요. (0-23)" };
+    }
+    const hour = parseInt(numbers);
+    if (hour < 0 || hour > 23) {
+      return { isValid: false, error: "올바른 시간을 입력해주세요. (0-23)" };
+    }
+    return { isValid: true, hour };
+  }
+
+  // 3-4자리 숫자인 경우
+  const hour = parseInt(
+    numbers.length === 3 ? numbers.slice(0, 1) : numbers.slice(0, 2)
+  );
+  const minute = parseInt(
+    numbers.length === 3 ? numbers.slice(1) : numbers.slice(2)
+  );
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+    return {
+      isValid: false,
+      error: "올바른 시간을 입력해주세요. (00:00-23:59)",
+    };
+  }
+
+  return { isValid: true, hour };
+};
