@@ -71,6 +71,12 @@ function App() {
     setIsFormVisible(false);
   };
 
+  // 다시 입력하기 핸들러 추가
+  const handleReset = (e) => {
+    e.preventDefault();
+    setIsFormVisible(true);
+  };
+
   // 시간에 따른 지지(地支) 결정
   const getTimeZhi = (hour) => {
     const timeRanges = [
@@ -195,144 +201,143 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col p-4 items-center">
-      {/* 전체 컨텐츠를 감싸는 컨���이너 수정 */}
+      {/* 전체 컨텐츠를 감싸는 컨테이너 수정 */}
       <div className="w-full min-w-[300px] max-w-[600px]">
         {/* 폼 컨테이너 */}
-        <div
-          className={classNames(
-            "transition-all duration-300 ease-in-out overflow-hidden",
-            isFormVisible ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
-          )}
-        >
+        <div>
           <form
             onSubmit={handleSubmit}
             className="bg-white rounded-lg shadow-md p-6 mb-4"
           >
-            <div className="mb-4">
-              <h2 className="text-lg mb-4">이름</h2>
-              <input
-                type="text"
-                name="name"
-                required
-                maxLength="20"
-                className="w-full p-2 border rounded-lg"
-              />
-            </div>
-
-            <div className="mb-4">
-              <h2 className="text-lg mb-4">성별</h2>
-              <div className="flex gap-4 mb-4">
-                <label className="flex-1">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    className="peer hidden"
-                  />
-                  <div className="peer-checked:bg-blue-100 peer-checked:border-blue-200 bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-full cursor-pointer text-center">
-                    남자
-                  </div>
-                </label>
-                <label className="flex-1">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    className="peer hidden"
-                  />
-                  <div className="peer-checked:bg-blue-100 peer-checked:border-blue-200 bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-full cursor-pointer text-center">
-                    여자
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h2 className="text-lg mb-4">생년월일</h2>
-              <input
-                type="text"
-                name="birthdate"
-                placeholder="예시) 880305"
-                maxLength="6"
-                required
-                className="w-full p-2 border rounded-lg"
-                onInput={(e) => {
-                  let value = e.target.value;
-                  if (value) {
-                    value = value.replace(/[^0-9]/g, "");
-                    e.target.value = value;
-                  }
-                }}
-              />
-            </div>
-
-            <div className="mb-4">
-              <h2 className="text-lg mb-4">시간</h2>
-              <div className="relative">
+            <div
+              className={classNames(
+                "transition-all duration-300 ease-in-out overflow-hidden",
+                isFormVisible
+                  ? "max-h-[800px] opacity-100"
+                  : "max-h-[0px] opacity-100"
+              )}
+            >
+              <div className="mb-4">
+                <h2 className="text-lg mb-4">이름</h2>
                 <input
                   type="text"
-                  name="hour"
-                  placeholder="시 (0-23)"
+                  name="name"
+                  required
+                  maxLength="20"
                   className="w-full p-2 border rounded-lg"
-                  onInput={handleHourInput}
                 />
-                <button
-                  type="button"
-                  onClick={handleClearTime}
-                  className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2.5}
-                    stroke="currentColor"
-                    className="size-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18 18 6M6 6l12 12"
+              </div>
+
+              <div className="mb-4">
+                <h2 className="text-lg mb-4">성별</h2>
+                <div className="flex gap-4 mb-4 px-4">
+                  <label className="flex-1">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="male"
+                      className="peer w-[1px] h-[1px] opacity-0 absolute"
                     />
-                  </svg>
-                </button>
+                    <div className="peer-checked:bg-blue-100 peer-checked:border-blue-200 bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-full cursor-pointer text-center peer-focus:ring-2 peer-focus:ring-blue-600  peer-focus:ring-offset-0">
+                      남자
+                    </div>
+                  </label>
+                  <label className="flex-1">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="female"
+                      className="peer w-[1px] h-[1px] opacity-0 absolute"
+                    />
+                    <div className="peer-checked:bg-blue-100 peer-checked:border-blue-200 bg-white border border-gray-300 text-gray-700 px-8 py-2 rounded-full cursor-pointer text-center peer-focus:ring-2 peer-focus:ring-blue-600 peer-focus:ring-offset-0">
+                      여자
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <h2 className="text-lg mb-4">생년월일</h2>
+                <input
+                  type="text"
+                  name="birthdate"
+                  placeholder="예시) 880305"
+                  maxLength="6"
+                  required
+                  className="w-full p-2 border rounded-lg"
+                  onInput={(e) => {
+                    let value = e.target.value;
+                    if (value) {
+                      value = value.replace(/[^0-9]/g, "");
+                      e.target.value = value;
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="mb-8">
+                <h2 className="text-lg mb-4">시간</h2>
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="hour"
+                    placeholder="시 (0-23)"
+                    className="w-full p-2 border rounded-lg"
+                    onInput={handleHourInput}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleClearTime}
+                    className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
+                      stroke="currentColor"
+                      className="size-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18 18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
 
+            {/* 사주팔자 제출 버튼 */}
             <button
-              type="submit"
-              className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+              type={isFormVisible ? "submit" : "button"}
+              onClick={!isFormVisible ? handleReset : undefined}
+              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2"
             >
-              사주팔자
+              {isFormVisible ? "사주팔자 보기" : "다시 입력하기"}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={classNames(
+                  "w-4 h-4 transform transition-transform",
+                  {
+                    "rotate-180": isFormVisible,
+                  }
+                )}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
           </form>
         </div>
-
-        {/* 토글 버튼 */}
-        <button
-          onClick={() => setIsFormVisible(!isFormVisible)}
-          className="mb-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 
-                     transition-all duration-300 ease-in-out flex items-center gap-2"
-        >
-          <span>{isFormVisible ? "입력 폼 닫기" : "입력 폼 열기"}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={classNames(
-              "w-4 h-4 transition-transform duration-300",
-              isFormVisible ? "rotate-180" : ""
-            )}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
 
         {/* 사주팔자 섹션 */}
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -444,7 +449,7 @@ const handleHourInput = (e) => {
   // 숫자가 아닌 모든 문자 제거 (정규식 사용)
   value = value.replace(/[^0-9]/g, "");
 
-  // 빈 문자열이면 ��력값 초기화
+  // 빈 문자열이면 입력값 초기화
   if (!value) {
     e.target.value = "";
     return;
