@@ -18,6 +18,36 @@ function App() {
   const [birthdateValue, setBirthdateValue] = useState(""); // 생년월일 입력 값
   const [hourValue, setHourValue] = useState(""); // 시간 입력 값
 
+  const handleBirthdateChange = (e) => {
+    let value = e.target.value.replace(/[^0-9-]/g, "");
+
+    // 하이픈 제거
+    value = value.replace(/-/g, "");
+
+    // 8자리로 제한
+    if (value.length > 8) {
+      value = value.slice(0, 8);
+    }
+
+    if (value.length === 5 || value.length === 6) {
+      e.target.value = `${value.slice(0, 4)}-${value.slice(4)}`;
+      setBirthdateValue(`${value.slice(0, 4)}-${value.slice(4)}`);
+      return;
+    }
+
+    if (value.length === 7 || value.length === 8) {
+      e.target.value = `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(
+        6
+      )}`;
+      setBirthdateValue(
+        `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6)}`
+      );
+      return;
+    }
+
+    setBirthdateValue(e.target.value);
+  };
+
   // 시간 입력 핸들러
   const handleHourChange = (e) => {
     let value = e.target.value.replace(/[^0-9:]/g, "");
@@ -65,26 +95,20 @@ function App() {
     }
 
     // 생년월일 검증
-    const birthdate = e.target.birthdate.value;
-    if (birthdate.length !== 6) {
-      alert("생년월일을 6자리로 입력해주세요.");
+    const birthdateValidation = validateAndFormatBirthdate(birthdateValue);
+    if (!birthdateValidation.isValid) {
+      alert(birthdateValidation.error);
       return;
     }
 
-    // YYMMDD 형식을 YYYY-MM-DD로 변환
-    const fullDate = `19${birthdate.slice(0, 2)}-${birthdate.slice(
-      2,
-      4
-    )}-${birthdate.slice(4, 6)}`;
-
     // 데이터 존재 여부 검증
-    if (!sajuData || !sajuData[fullDate]) {
+    if (!sajuData || !sajuData[birthdateValidation.formattedDate]) {
       alert("해당 날짜의 사주 데이터가 없습니다.");
       return;
     }
 
     // 사주 데이터 설정
-    const data = sajuData[fullDate];
+    const data = sajuData[birthdateValidation.formattedDate];
     setYearGan(data.yearGan);
     setYearZhi(data.yearZhi);
     setMonthGan(data.monthGan);
@@ -351,18 +375,14 @@ function App() {
                   <input
                     type="text"
                     name="birthdate"
-                    placeholder="예시) 880305"
-                    maxLength="6"
+                    placeholder="예시) 19880305"
+                    maxLength="10"
                     required
                     autoComplete="off"
                     className="w-full p-2 border rounded-lg"
                     value={birthdateValue}
-                    onChange={(e) => handleInputChange(e, setBirthdateValue)}
+                    onChange={handleBirthdateChange}
                     onKeyDown={(e) => handleKeyDown(e, setBirthdateValue)}
-                    onInput={(e) => {
-                      let value = e.target.value.replace(/[^0-9]/g, "");
-                      setBirthdateValue(value);
-                    }}
                   />
                   {birthdateValue && (
                     <div
@@ -593,4 +613,59 @@ const validateAndFormatTime = (value) => {
   }
 
   return { isValid: true, hour };
+};
+
+const validateAndFormatBirthdate = (value) => {
+  if (!value) return { isValid: false, error: "생년월일을 입력해주세요." };
+
+  // 숫자만 추출
+  const numbers = value.replace(/[^0-9]/g, "");
+
+  // 길이 검증
+  if (numbers.length < 4) {
+    return { isValid: false, error: "연도를 4자리로 입력해주세요." };
+  }
+
+  // 연도 검증 (1900-2050)
+  const year = parseInt(numbers.slice(0, 4));
+  if (year < 1900 || year > 2050) {
+    return { isValid: false, error: "연도는 1900-2050 사이여야 합니다." };
+  }
+
+  if (numbers.length === 5) {
+    return { isValid: false, error: "월을 2자리로 입력해주세요." };
+  }
+
+  if (numbers.length >= 6) {
+    // 월 검증 (1-12)
+    const month = parseInt(numbers.slice(4, 6));
+    if (month < 1 || month > 12) {
+      return { isValid: false, error: "월은 01-12 사이여야 합니다." };
+    }
+  }
+
+  if (numbers.length === 7) {
+    return { isValid: false, error: "일을 2자리로 입력해주세요." };
+  }
+
+  if (numbers.length === 8) {
+    // 일 검증 (1-31)
+    const day = parseInt(numbers.slice(6, 8));
+    if (day < 1 || day > 31) {
+      return { isValid: false, error: "일은 01-31 사이여야 합니다." };
+    }
+  }
+
+  // 모든 검증 통과
+  if (numbers.length === 8) {
+    return {
+      isValid: true,
+      formattedDate: `${numbers.slice(0, 4)}-${numbers.slice(
+        4,
+        6
+      )}-${numbers.slice(6, 8)}`,
+    };
+  }
+
+  return { isValid: false, error: "생년월일을 8자리로 입력해주세요." };
 };
