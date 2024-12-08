@@ -13,6 +13,9 @@ function App() {
   const [dayGan, setDayGan] = useState(""); // 일간
   const [dayZhi, setDayZhi] = useState(""); // 일지
   const [isFormVisible, setIsFormVisible] = useState(true); // 처음에는 열려있도록
+  const [nameValue, setNameValue] = useState(""); // 이름 입력 값
+  const [birthdateValue, setBirthdateValue] = useState(""); // 생년월일 입력 값
+  const [hourValue, setHourValue] = useState(""); // 시간 입력 값
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -165,10 +168,26 @@ function App() {
     return ganOrder[finalGanIndex];
   };
 
-  // 시간 초기화 핸들러 추가
+  // Input clear handler 개선
+  const handleClearInput = (setter) => {
+    setter(""); // 상태만 초기화하면 React가 DOM을 업데이트
+  };
+
+  // Input keydown handler 개선
+  const handleKeyDown = (e, setter) => {
+    if (e.key === "Escape") {
+      handleClearInput(setter);
+    }
+  };
+
+  // Input change handler (기존과 동일)
+  const handleInputChange = (e, setter) => {
+    setter(e.target.value);
+  };
+
+  // 시간 초기화 핸들러 개선
   const handleClearTime = () => {
-    const hourInput = document.querySelector('input[name="hour"]');
-    if (hourInput) hourInput.value = "";
+    setHourValue("");
   };
 
   const earthlyBranchesClasses = {
@@ -208,6 +227,7 @@ function App() {
           <form
             onSubmit={handleSubmit}
             className="bg-white rounded-lg shadow-md p-6 mb-4"
+            autoComplete="off"
           >
             <div
               className={classNames(
@@ -219,13 +239,41 @@ function App() {
             >
               <div className="mb-4">
                 <h2 className="text-lg mb-4">이름</h2>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  maxLength="20"
-                  className="w-full p-2 border rounded-lg"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    maxLength="20"
+                    autoComplete="off"
+                    className="w-full p-2 border rounded-lg"
+                    value={nameValue}
+                    onChange={(e) => handleInputChange(e, setNameValue)}
+                    onKeyDown={(e) => handleKeyDown(e, setNameValue)}
+                  />
+                  {nameValue && (
+                    <button
+                      type="button"
+                      onClick={() => handleClearInput(setNameValue)}
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="mb-4">
@@ -258,21 +306,46 @@ function App() {
 
               <div className="mb-4">
                 <h2 className="text-lg mb-4">생년월일</h2>
-                <input
-                  type="text"
-                  name="birthdate"
-                  placeholder="예시) 880305"
-                  maxLength="6"
-                  required
-                  className="w-full p-2 border rounded-lg"
-                  onInput={(e) => {
-                    let value = e.target.value;
-                    if (value) {
-                      value = value.replace(/[^0-9]/g, "");
-                      e.target.value = value;
-                    }
-                  }}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="birthdate"
+                    placeholder="예시) 880305"
+                    maxLength="6"
+                    required
+                    autoComplete="off"
+                    className="w-full p-2 border rounded-lg"
+                    value={birthdateValue}
+                    onChange={(e) => handleInputChange(e, setBirthdateValue)}
+                    onKeyDown={(e) => handleKeyDown(e, setBirthdateValue)}
+                    onInput={(e) => {
+                      let value = e.target.value.replace(/[^0-9]/g, "");
+                      setBirthdateValue(value);
+                    }}
+                  />
+                  {birthdateValue && (
+                    <button
+                      type="button"
+                      onClick={() => handleClearInput(setBirthdateValue)}
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="mb-8">
@@ -282,29 +355,35 @@ function App() {
                     type="text"
                     name="hour"
                     placeholder="시 (0-23)"
+                    autoComplete="off"
                     className="w-full p-2 border rounded-lg"
+                    value={hourValue}
+                    onChange={(e) => handleInputChange(e, setHourValue)}
+                    onKeyDown={(e) => handleKeyDown(e, setHourValue)}
                     onInput={handleHourInput}
                   />
-                  <button
-                    type="button"
-                    onClick={handleClearTime}
-                    className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2.5}
-                      stroke="currentColor"
-                      className="size-5"
+                  {hourValue && (
+                    <button
+                      type="button"
+                      onClick={handleClearTime}
+                      className="absolute rounded-full top-1/2 right-4 p-0.5 -translate-y-1/2 bg-gray-200 text-gray-700 hover:bg-gray-300"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18 18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -341,7 +420,6 @@ function App() {
 
         {/* 사주팔자 섹션 */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-lg mb-4">사주팔자보기</h2>
           <div className="grid grid-cols-4 gap-4">
             <div>
               <h3 className="text-center mb-2">시주</h3>
