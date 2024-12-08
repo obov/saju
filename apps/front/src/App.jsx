@@ -94,6 +94,16 @@ function App() {
     // 시간 검증
     if (!hourValue) return;
 
+    // 숫자만 추출하여 시간 포맷팅
+    const numbers = hourValue.replace(/[^0-9]/g, "");
+    if (numbers.length === 1) {
+      const formattedTime = `0${numbers}:00`;
+      setHourValue(formattedTime);
+    } else if (numbers.length === 2) {
+      const formattedTime = `${numbers}:00`;
+      setHourValue(formattedTime);
+    }
+
     const timeValidation = validateAndFormatTime(hourValue);
     if (!timeValidation.isValid) {
       alert(timeValidation.error);
@@ -237,7 +247,7 @@ function App() {
   };
 
   const heavenlyStemsClasses = {
-    甲: "bg-green-300 text-gray-700 border-green-600", // 녹색 (목���색)
+    甲: "bg-green-300 text-gray-700 border-green-600", // 녹색 (목색)
     乙: "bg-green-300 text-gray-700 border-green-600", // 목 (녹색)
     丙: "bg-red-300 text-gray-700 border-red-600", // 화 (적색)
     丁: "bg-red-300 text-gray-700 border-red-600", // 화 (적색)
@@ -557,7 +567,7 @@ const validateAndFormatTime = (value) => {
   if (numbers.length <= 2) {
     // 1-2자리 숫자인 경우
     if (!/^\d{1,2}$/.test(numbers)) {
-      return { isValid: false, error: "올바른 시간을 입력해주세요. (0-23)" };
+      return { isValid: false, error: "올바른 시간을 입력해주세���. (0-23)" };
     }
     const hour = parseInt(numbers);
     if (hour < 0 || hour > 23) {
