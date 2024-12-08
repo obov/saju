@@ -297,7 +297,7 @@ function App() {
           >
             <div
               className={classNames(
-                "transition-all duration-300 ease-in-out overflow-hidden",
+                "transition-all duration-300 ease-in-out overflow-hidden px-4",
                 isFormVisible
                   ? "max-h-[800px] opacity-100"
                   : "max-h-[0px] opacity-100"
