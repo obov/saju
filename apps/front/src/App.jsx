@@ -1,6 +1,7 @@
 import { useState } from "react";
 import classNames from "classnames";
 import useSajuData from "./hooks/useSajuData";
+import useScrollVisibility from "./hooks/useScrollVisibility";
 
 function App() {
   const sajuData = useSajuData();
@@ -12,7 +13,7 @@ function App() {
   const [monthZhi, setMonthZhi] = useState(""); // 월지
   const [dayGan, setDayGan] = useState(""); // 일간
   const [dayZhi, setDayZhi] = useState(""); // 일지
-  const [isFormVisible, setIsFormVisible] = useState(true); // 처음에는 열려있도록
+  const [isFormVisible, setIsFormVisible] = useScrollVisibility(true); // 처음에는 열려있도록
   const [nameValue, setNameValue] = useState(""); // 이름 입력 값
   const [birthdateValue, setBirthdateValue] = useState(""); // 생년월일 입력 값
   const [hourValue, setHourValue] = useState(""); // 시간 입력 값
@@ -567,7 +568,7 @@ const validateAndFormatTime = (value) => {
   if (numbers.length <= 2) {
     // 1-2자리 숫자인 경우
     if (!/^\d{1,2}$/.test(numbers)) {
-      return { isValid: false, error: "올바른 시간을 입력해주세���. (0-23)" };
+      return { isValid: false, error: "올바른 시간을 입력해주세요. (0-23)" };
     }
     const hour = parseInt(numbers);
     if (hour < 0 || hour > 23) {
